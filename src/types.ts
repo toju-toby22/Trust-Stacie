@@ -1,13 +1,21 @@
-export interface FormData {
-  guestName: string;
+// types.ts for Trust App
+
+export interface TrustFormData {
+  guestName1: string;
+  guestName2: string;
+  guestName3: string;
+  guestName4: string;
   rsvp: 'yes' | 'no';
-  giftOption: 'cashapp' | 'physical';
-  notes: string;
 }
 
-export interface SubmittedData extends FormData {
+export interface SubmittedData extends TrustFormData {
   timestamp: string;
+  name?: string;
+  email?: string;
+  guests?: number;
+  sheetName: string;
 }
+
 
 export interface Config {
   GOOGLE_APPS_SCRIPT_URL: string;

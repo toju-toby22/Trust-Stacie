@@ -1,52 +1,126 @@
 // RSVPForm.tsx
 import React, { useEffect, useState } from "react";
-import { FormData, SubmittedData } from "./types";
 import { CONFIG } from "./config";
-import { getGuestNameFromURL } from "./utils";
 import image from "./flower-pattern-png-5.png";
-// import { FaChevronDown } from "react-icons/fa6";
+import type { SubmittedData } from "./types";
+
+interface TrustFormData {
+  guestName1: string;
+  guestName2: string;
+  guestName3: string;
+  guestName4: string;
+  rsvp: "yes" | "no";
+}
+
+
 
 interface RSVPFormProps {
   onSubmissionSuccess: (data: SubmittedData) => void;
 }
 
 export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
-  const [formData, setFormData] = useState<FormData>({
-    guestName: "",
+  const [formData, setFormData] = useState<TrustFormData>({
+    guestName1: "",
+    guestName2: "",
+    guestName3: "",
+    guestName4: "",
     rsvp: "yes",
-    giftOption: "cashapp",
-    notes: "",
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [showQA, setShowQA] = useState<boolean>(false);
   const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
+  const [linkExpired, setLinkExpired] = useState<boolean>(false);
+  const [linkAccessTime, setLinkAccessTime] = useState<number | null>(null);
 
   useEffect(() => {
-    const guestName = getGuestNameFromURL();
-    if (guestName) {
-      setFormData((prev) => ({ ...prev, guestName }));
+    // Check if link has been accessed before
+    const storedAccessTime = localStorage.getItem('trustRSVPAccessTime');
+    const storedSubmitted = localStorage.getItem('trustRSVPSubmitted');
+    
+    if (storedSubmitted === 'true') {
+      setLinkExpired(true);
+      return;
+    }
+
+    const currentTime = Date.now();
+    
+    if (storedAccessTime) {
+      const accessTime = parseInt(storedAccessTime);
+      const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+      
+      if (currentTime - accessTime > fiveMinutes) {
+        setLinkExpired(true);
+        localStorage.removeItem('trustRSVPAccessTime');
+        return;
+      }
+      setLinkAccessTime(accessTime);
+    } else {
+      // First time accessing the link
+      localStorage.setItem('trustRSVPAccessTime', currentTime.toString());
+      setLinkAccessTime(currentTime);
     }
 
     const timer = setTimeout(() => {
       setIsFormVisible(true);
     }, 3000);
 
-    return () => clearTimeout(timer);
-  }, []);
+    // Set up expiration check every second
+    const expirationCheck = setInterval(() => {
+      if (linkAccessTime) {
+        const fiveMinutes = 5 * 60 * 1000;
+        if (Date.now() - linkAccessTime > fiveMinutes) {
+          setLinkExpired(true);
+          localStorage.removeItem('trustRSVPAccessTime');
+          clearInterval(expirationCheck);
+        }
+      }
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(expirationCheck);
+    };
+  }, [linkAccessTime]);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const validateFullName = (name: string): boolean => {
+    // Check if name has at least first and last name (2 words minimum)
+    const nameParts = name.trim().split(/\s+/);
+    return nameParts.length >= 2 && nameParts.every(part => part.length > 0);
+  };
+
   const handleSubmit = async () => {
-    if (!formData.guestName.trim()) {
-      setError("Please enter Guest Name");
+    // Validate at least Guest Name 1 is filled with full name
+    if (!formData.guestName1.trim()) {
+      setError("Please enter Guest Name 1 (First and Last Name required)");
+      return;
+    }
+
+    if (!validateFullName(formData.guestName1)) {
+      setError("Guest Name 1 must include both First and Last Name");
+      return;
+    }
+
+    // Validate other guest names if provided
+    if (formData.guestName2.trim() && !validateFullName(formData.guestName2)) {
+      setError("Guest Name 2 must include both First and Last Name");
+      return;
+    }
+
+    if (formData.guestName3.trim() && !validateFullName(formData.guestName3)) {
+      setError("Guest Name 3 must include both First and Last Name");
+      return;
+    }
+
+    if (formData.guestName4.trim() && !validateFullName(formData.guestName4)) {
+      setError("Guest Name 4 must include both First and Last Name");
       return;
     }
 
@@ -57,6 +131,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
       const dataToSubmit: SubmittedData = {
         ...formData,
         timestamp: new Date().toISOString(),
+        sheetName: "trust", // Specify the sheet name
       };
 
       await fetch(CONFIG.GOOGLE_APPS_SCRIPT_URL, {
@@ -68,6 +143,10 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
         body: JSON.stringify(dataToSubmit),
       });
 
+      // Mark as submitted and expire the link
+      localStorage.setItem('trustRSVPSubmitted', 'true');
+      localStorage.removeItem('trustRSVPAccessTime');
+      
       onSubmissionSuccess(dataToSubmit);
     } catch (err) {
       setError("There was an error submitting your RSVP. Please try again.");
@@ -77,6 +156,26 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
     }
   };
 
+  // Show expired message
+  if (linkExpired) {
+    return (
+      <div className="bg-white rounded-xl shadow-xl p-8 max-w-2xl mx-auto text-center">
+        <div className="mb-6">
+          <svg className="w-20 h-20 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">Link Expired</h2>
+          <p className="text-gray-600 text-lg">
+            This RSVP link has expired. The link is only valid for 5 minutes after first access or expires immediately after submission.
+          </p>
+          <p className="text-gray-500 mt-4">
+            Please contact the event organizer if you need a new link.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Loading State */}
@@ -84,7 +183,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
         <div className="relative flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-600 mb-4"></div>
-            <p className="text-black  font-extrabold text-4xl monsieur-la-doulaise-regular-diff">
+            <p className="text-black font-extrabold text-4xl monsieur-la-doulaise-regular-diff">
               Loading your invitation...
             </p>
           </div>
@@ -93,28 +192,25 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
 
       <div
         className={`bg-white rounded-xl shadow-xl p-8 max-w-2xl mx-auto relative overflow-hidden transition-all duration-1000 ${
-          isFormVisible
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-4"
-        }
-        `}
+          isFormVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
       >
-        <div className="flex justify-between items-center   bg-gradient-to-br from-yellow-600 via-emerald-600 to-teal-600">
+        <div className="flex justify-between items-center bg-gradient-to-br from-yellow-600 via-emerald-600 to-teal-600">
           <img
             src={image}
             alt=""
-            className="h-12 lg:h-[70px] rotate-[90deg] absolute top-[10px] left-[-19px] "
+            className="h-12 lg:h-[70px] rotate-[90deg] absolute top-[10px] left-[-19px]"
           />
           <img
             src={image}
             alt=""
-            className="h-12 lg:h-[70px] rotate-[90deg] absolute top-[10px] right-[-19px] scale-y-[-1] "
+            className="h-12 lg:h-[70px] rotate-[90deg] absolute top-[10px] right-[-19px] scale-y-[-1]"
           />
         </div>
 
-        <div className="flex items-center justify-center ">
+        <div className="flex items-center justify-center">
           <div className="text-center mb-8">
-            <h1 className="text-[40px] text-center font-bold text-gray-800 mb-2  monsieur-la-doulaise-regular">
+            <h1 className="text-[40px] text-center font-bold text-gray-800 mb-2 monsieur-la-doulaise-regular">
               {CONFIG.EVENT_NAME}
             </h1>
             <div className="h-1 w-20 bg-green-500 mx-auto rounded-full mb-4"></div>
@@ -126,6 +222,15 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
           </div>
         </div>
 
+        {/* Time remaining indicator */}
+        {linkAccessTime && (
+          <div className="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 rounded">
+            <p className="text-sm font-semibold">
+              ⏰ This link expires 5 minutes after first access
+            </p>
+          </div>
+        )}
+
         {error && (
           <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded mb-6">
             <p className="font-semibold">Error</p>
@@ -135,88 +240,65 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
 
         <div className="space-y-6">
           <div>
-            <label
-              className="block text-gray-700 text-sm font-semibold mb-2"
-              htmlFor="guestName"
-            >
-             Guest Name 1*
+            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="guestName1">
+              Guest Name 1* (First and Last Name)
             </label>
             <input
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              id="guestName"
-              name="guestName"
+              id="guestName1"
+              name="guestName1"
               type="text"
-              value={formData.guestName}
+              value={formData.guestName1}
               onChange={handleChange}
-              placeholder="Enter Guest Name"
+              placeholder="e.g., John Doe"
+              required
             />
           </div>
-
-
-
 
           <div>
-            <label
-              className="block text-gray-700 text-sm font-semibold mb-2"
-              htmlFor="guestName"
-            >
-             Guest Name 2*
+            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="guestName2">
+              Guest Name 2 (First and Last Name)
             </label>
             <input
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              id="guestName"
-              name="guestName"
+              id="guestName2"
+              name="guestName2"
               type="text"
-              value={formData.guestName}
+              value={formData.guestName2}
               onChange={handleChange}
-              placeholder="Enter Guest Name"
+              placeholder="e.g., Jane Smith (Optional)"
             />
           </div>
-
-
-
 
           <div>
-            <label
-              className="block text-gray-700 text-sm font-semibold mb-2"
-              htmlFor="guestName"
-            >
-             Guest Name 3*
+            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="guestName3">
+              Guest Name 3 (First and Last Name)
             </label>
             <input
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              id="guestName"
-              name="guestName"
+              id="guestName3"
+              name="guestName3"
               type="text"
-              value={formData.guestName}
+              value={formData.guestName3}
               onChange={handleChange}
-              placeholder="Enter Guest Name"
+              placeholder="e.g., Bob Johnson (Optional)"
             />
           </div>
-
-
-
 
           <div>
-            <label
-              className="block text-gray-700 text-sm font-semibold mb-2"
-              htmlFor="guestName"
-            >
-             Guest Name 4*
+            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="guestName4">
+              Guest Name 4 (First and Last Name)
             </label>
             <input
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              id="guestName"
-              name="guestName"
+              id="guestName4"
+              name="guestName4"
               type="text"
-              value={formData.guestName}
+              value={formData.guestName4}
               onChange={handleChange}
-              placeholder="Enter Guest Name"
+              placeholder="e.g., Mary Williams (Optional)"
             />
           </div>
-
-
-          
 
           <div>
             <label className="block text-gray-700 text-sm font-semibold mb-3">
@@ -232,9 +314,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                   onChange={handleChange}
                   className="w-5 h-5 text-green-600 focus:ring-2 focus:ring-green-500"
                 />
-                <span className="ml-2 text-gray-700 font-medium">
-                  Yes, I'll be there
-                </span>
+                <span className="ml-2 text-gray-700 font-medium">Yes, I'll be there</span>
               </label>
               <label className="flex items-center cursor-pointer">
                 <input
@@ -245,35 +325,10 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                   onChange={handleChange}
                   className="w-5 h-5 text-red-600 focus:ring-2 focus:ring-red-500"
                 />
-                <span className="ml-2 text-gray-700 font-medium">
-                  Sorry, can't make it
-                </span>
+                <span className="ml-2 text-gray-700 font-medium">Sorry, can't make it</span>
               </label>
             </div>
           </div>
-
-          {/* <div>
-          <label className=" flex justify-between items-baseline text-gray-700 text-sm font-semibold mb-2" htmlFor="giftOption">
-            Gift Preference :
-
-           <FaChevronDown
-           />
-
-          </label>
-          <select
-            className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            id="giftOption"
-            name="giftOption"
-            value={formData.giftOption}
-            onChange={handleChange}
-
-            
-          >
-            
-            <option value="physical">Physical Gift</option>
-
-          </select>
-        </div> */}
 
           <div className="mb-6 rounded-xl p-6 border border-emerald-200 bg-gradient-to-br from-yellow-100 via-emerald-100 to-yellow-50 shadow-lg">
             <button
@@ -285,8 +340,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                   Q & A
                 </h3>
                 <p className="text-sm text-emerald-700">
-                  For all our friends and family who have lots of questions,
-                  please check out our Q & A
+                  For all our friends and family who have lots of questions, please check out our Q & A
                 </p>
               </div>
               <svg
@@ -295,12 +349,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
 
@@ -310,9 +359,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                   <p className="font-semibold text-emerald-900 mb-1 bg-gradient-to-r from-emerald-700 via-yellow-600 to-emerald-400 bg-clip-text text-transparent">
                     1. When is the RSVP deadline?
                   </p>
-                  <p className="text-emerald-800">
-                    November 14th, 2025 (so we can have accurate headcount).
-                  </p>
+                  <p className="text-emerald-800">November 14th, 2025 (so we can have accurate headcount).</p>
                 </div>
 
                 <div>
@@ -338,7 +385,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                   <p className="text-emerald-800">
                     Your presence is the greatest gift, but if you wish to give, cash gifts are welcome / preferred:
                   </p>
-                    <p className="text-emerald-800">
+                  <p className="text-emerald-800">
                     CashApp:{" "}
                     <a
                       href="https://cash.app/$trustasonye1"
@@ -356,7 +403,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                     >
                       trusttaylor317@gmail.com
                     </a>
-                    </p>
+                  </p>
                 </div>
 
                 <div>
@@ -370,21 +417,6 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
               </div>
             )}
           </div>
-
-          {/* <div>
-          <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="notes">
-            Additional Notes (Optional)
-          </label>
-          <textarea
-            className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            id="notes"
-            name="notes"
-            value={formData.notes}
-            onChange={handleChange}
-            rows={4}
-            placeholder="Dietary restrictions, plus-ones, special requests..."
-          />
-        </div> */}
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
             <button
@@ -427,7 +459,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
               href={CONFIG.GOOGLE_CALENDAR_EVENT_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto text-center font-bold text-sm  bg-blue-500 hover:bg-blue-600 text-white py-3 px-8 rounded-lg focus:outline-none focus:ring-4 focus:ring-green-300 transition duration-200 shadow-md hover:shadow-lg"
+              className="w-full sm:w-auto text-center font-bold text-sm bg-blue-500 hover:bg-blue-600 text-white py-3 px-8 rounded-lg focus:outline-none focus:ring-4 focus:ring-green-300 transition duration-200 shadow-md hover:shadow-lg"
             >
               Add to Calendar
             </a>

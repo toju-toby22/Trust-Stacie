@@ -1,8 +1,8 @@
-// App.tsx
+// App.tsx for Trust App
 import React, { useState } from 'react';
-import { RSVPForm } from './RSVPForm';
+import { RSVPForm } from './RSVPForm'; // Your trust form with 4 inputs
 import { ConfirmationMessage } from './ConfirmationMessage';
-import { SubmittedData } from './types';
+import type { SubmittedData } from './types';
 import bgImage from "./bg.jpg"
 
 export default function App() {
@@ -19,15 +19,16 @@ export default function App() {
     setSubmittedData(null);
   };
 
+  
+
   return (
-    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8 relative bg-contain flex justify-center"
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative bg-contain flex justify-center"
      style={{
-    backgroundImage:`linear-gradient(to bottom right, rgba(202,138,4,0.7), rgba(5,150,105,0.7), rgba(13,148,136,0.7)), url(${bgImage})`,
-    backgroundBlendMode: "overlay",
-    width: "100%",
-    backgroundPosition:'center'
-  }}
-    >
+      backgroundImage:`linear-gradient(to bottom right, rgba(202,138,4,0.7), rgba(5,150,105,0.7), rgba(13,148,136,0.7)), url(${bgImage})`,
+      backgroundBlendMode: "overlay",
+      width: "100%",
+      backgroundPosition:'center'
+    }}>
       <div className="max-w-3xl mx-auto">
         {!submitted ? (
           <RSVPForm onSubmissionSuccess={handleSubmissionSuccess} />
