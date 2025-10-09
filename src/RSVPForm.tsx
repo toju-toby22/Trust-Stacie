@@ -183,7 +183,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
         <div className="relative flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-600 mb-4"></div>
-            <p className="text-black font-extrabold text-4xl monsieur-la-doulaise-regular-diff">
+            <p className="text-white font-extrabold text-4xl monsieur-la-doulaise-regular-diff">
               Loading your invitation...
             </p>
           </div>
@@ -213,6 +213,9 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
             <h1 className="text-[40px] text-center font-bold text-gray-800 mb-2 monsieur-la-doulaise-regular">
               {CONFIG.EVENT_NAME}
             </h1>
+            <p>With</p>
+
+            <p className="lavishly-yours-regular text-[30px]">Trust & Stacie</p>
             <div className="h-1 w-20 bg-green-500 mx-auto rounded-full mb-4"></div>
             <div className="text-gray-600 space-y-1">
               <p className="text-lg font-semibold">{CONFIG.EVENT_DATE}</p>
