@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { CONFIG } from "./config";
 import image from "./flower-pattern-png-5.png";
-import type { SubmittedData } from "./types";
 
 interface TrustFormData {
   guestName1: string;
@@ -12,7 +11,10 @@ interface TrustFormData {
   rsvp: "yes" | "no";
 }
 
-
+interface SubmittedData extends TrustFormData {
+  timestamp: string;
+  sheetName: string;
+}
 
 interface RSVPFormProps {
   onSubmissionSuccess: (data: SubmittedData) => void;
@@ -213,9 +215,10 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
             <h1 className="text-[40px] text-center font-bold text-gray-800 mb-2 monsieur-la-doulaise-regular">
               {CONFIG.EVENT_NAME}
             </h1>
-            <p>With</p>
 
-            <p className="lavishly-yours-regular text-[30px]">Trust & Stacie</p>
+             <p>With</p>
+
+            <p className="lavishly-yours-regular text-[30px]">Stacie & Trust  </p>
             <div className="h-1 w-20 bg-green-500 mx-auto rounded-full mb-4"></div>
             <div className="text-gray-600 space-y-1">
               <p className="text-lg font-semibold">{CONFIG.EVENT_DATE}</p>
