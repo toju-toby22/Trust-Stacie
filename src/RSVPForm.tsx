@@ -242,7 +242,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
             <div className="text-gray-600 space-y-1">
               <p className="text-lg font-semibold">{CONFIG.EVENT_DATE}</p>
               <p>{CONFIG.EVENT_TIME}</p>
-              <p>{CONFIG.EVENT_LOCATION}</p>
+              {/* <p>{CONFIG.EVENT_LOCATION}</p> */}
               <p>
                 <span className="font-bold">Venue:</span> 972 Alpharetta St.
                 Roswell, GA.30075 (Roswell historic hall)
