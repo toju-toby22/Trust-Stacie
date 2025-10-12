@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { CONFIG } from "./config";
 import image from "./flower-pattern-png-5.png";
-
+import { LuCircleChevronDown } from "react-icons/lu";
 interface TrustFormData {
   guestName1: string;
   guestName2: string;
@@ -37,29 +37,29 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
 
   useEffect(() => {
     // Check if link has been accessed before
-    const storedAccessTime = localStorage.getItem('trustRSVPAccessTime');
-    const storedSubmitted = localStorage.getItem('trustRSVPSubmitted');
-    
-    if (storedSubmitted === 'true') {
+    const storedAccessTime = localStorage.getItem("trustRSVPAccessTime");
+    const storedSubmitted = localStorage.getItem("trustRSVPSubmitted");
+
+    if (storedSubmitted === "true") {
       setLinkExpired(true);
       return;
     }
 
     const currentTime = Date.now();
-    
+
     if (storedAccessTime) {
       const accessTime = parseInt(storedAccessTime);
       const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
-      
+
       if (currentTime - accessTime > fiveMinutes) {
         setLinkExpired(true);
-        localStorage.removeItem('trustRSVPAccessTime');
+        localStorage.removeItem("trustRSVPAccessTime");
         return;
       }
       setLinkAccessTime(accessTime);
     } else {
       // First time accessing the link
-      localStorage.setItem('trustRSVPAccessTime', currentTime.toString());
+      localStorage.setItem("trustRSVPAccessTime", currentTime.toString());
       setLinkAccessTime(currentTime);
     }
 
@@ -70,10 +70,10 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
     // Set up expiration check every second
     const expirationCheck = setInterval(() => {
       if (linkAccessTime) {
-        const fiveMinutes = 5 * 60 * 1000;
+        const fiveMinutes = 10 * 60 * 1000;
         if (Date.now() - linkAccessTime > fiveMinutes) {
           setLinkExpired(true);
-          localStorage.removeItem('trustRSVPAccessTime');
+          localStorage.removeItem("trustRSVPAccessTime");
           clearInterval(expirationCheck);
         }
       }
@@ -86,7 +86,9 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
   }, [linkAccessTime]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -95,7 +97,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
   const validateFullName = (name: string): boolean => {
     // Check if name has at least first and last name (2 words minimum)
     const nameParts = name.trim().split(/\s+/);
-    return nameParts.length >= 2 && nameParts.every(part => part.length > 0);
+    return nameParts.length >= 2 && nameParts.every((part) => part.length > 0);
   };
 
   const handleSubmit = async () => {
@@ -146,9 +148,9 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
       });
 
       // Mark as submitted and expire the link
-      localStorage.setItem('trustRSVPSubmitted', 'true');
-      localStorage.removeItem('trustRSVPAccessTime');
-      
+      localStorage.setItem("trustRSVPSubmitted", "true");
+      localStorage.removeItem("trustRSVPAccessTime");
+
       onSubmissionSuccess(dataToSubmit);
     } catch (err) {
       setError("There was an error submitting your RSVP. Please try again.");
@@ -163,12 +165,25 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
     return (
       <div className="bg-white rounded-xl shadow-xl p-8 max-w-2xl mx-auto text-center">
         <div className="mb-6">
-          <svg className="w-20 h-20 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          <svg
+            className="w-20 h-20 text-red-500 mx-auto mb-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
           </svg>
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">Link Expired</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">
+            Link Expired
+          </h2>
           <p className="text-gray-600 text-lg">
-            This RSVP link has expired. The link is only valid for 5 minutes after first access or expires immediately after submission.
+            This RSVP link has expired. The link is only valid for 5 minutes
+            after first access or expires immediately after submission.
           </p>
           <p className="text-gray-500 mt-4">
             Please contact the event organizer if you need a new link.
@@ -194,7 +209,9 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
 
       <div
         className={`bg-white rounded-xl shadow-xl p-8 max-w-2xl mx-auto relative overflow-hidden transition-all duration-1000 ${
-          isFormVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          isFormVisible
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4"
         }`}
       >
         <div className="flex justify-between items-center bg-gradient-to-br from-yellow-600 via-emerald-600 to-teal-600">
@@ -216,14 +233,20 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
               {CONFIG.EVENT_NAME}
             </h1>
 
-             <p>With</p>
+            <p>With</p>
 
-            <p className="lavishly-yours-regular text-[30px]">Stacie & Trust  </p>
+            <p className="lavishly-yours-regular text-[30px]">
+              Stacie & Trust{" "}
+            </p>
             <div className="h-1 w-20 bg-green-500 mx-auto rounded-full mb-4"></div>
             <div className="text-gray-600 space-y-1">
               <p className="text-lg font-semibold">{CONFIG.EVENT_DATE}</p>
               <p>{CONFIG.EVENT_TIME}</p>
               <p>{CONFIG.EVENT_LOCATION}</p>
+              <p>
+                <span className="font-bold">Venue:</span> 972 Alpharetta St.
+                Roswell, GA.30075 (Roswell historic hall)
+              </p>
             </div>
           </div>
         </div>
@@ -246,7 +269,10 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
 
         <div className="space-y-6">
           <div>
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="guestName1">
+            <label
+              className="block text-gray-700 text-sm font-semibold mb-2"
+              htmlFor="guestName1"
+            >
               Guest Name 1* (First and Last Name)
             </label>
             <input
@@ -262,7 +288,10 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
           </div>
 
           <div>
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="guestName2">
+            <label
+              className="block text-gray-700 text-sm font-semibold mb-2"
+              htmlFor="guestName2"
+            >
               Guest Name 2 (First and Last Name)
             </label>
             <input
@@ -277,7 +306,10 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
           </div>
 
           <div>
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="guestName3">
+            <label
+              className="block text-gray-700 text-sm font-semibold mb-2"
+              htmlFor="guestName3"
+            >
               Guest Name 3 (First and Last Name)
             </label>
             <input
@@ -292,7 +324,10 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
           </div>
 
           <div>
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="guestName4">
+            <label
+              className="block text-gray-700 text-sm font-semibold mb-2"
+              htmlFor="guestName4"
+            >
               Guest Name 4 (First and Last Name)
             </label>
             <input
@@ -320,7 +355,9 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                   onChange={handleChange}
                   className="w-5 h-5 text-green-600 focus:ring-2 focus:ring-green-500"
                 />
-                <span className="ml-2 text-gray-700 font-medium">Yes, I'll be there</span>
+                <span className="ml-2 text-gray-700 font-medium">
+                  Yes, I'll be there
+                </span>
               </label>
               <label className="flex items-center cursor-pointer">
                 <input
@@ -331,33 +368,44 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                   onChange={handleChange}
                   className="w-5 h-5 text-red-600 focus:ring-2 focus:ring-red-500"
                 />
-                <span className="ml-2 text-gray-700 font-medium">Sorry, can't make it</span>
+                <span className="ml-2 text-gray-700 font-medium">
+                  Sorry, can't make it
+                </span>
               </label>
             </div>
+
           </div>
 
-          <div className="mb-6 rounded-xl p-6 border border-emerald-200 bg-gradient-to-br from-yellow-100 via-emerald-100 to-yellow-50 shadow-lg">
-            <button
-              onClick={() => setShowQA(!showQA)}
-              className="w-full flex items-center justify-between text-left"
-            >
+          <ul className="line-spacing-1">
+            <li className="font-bold">Note:</li>
+            <li>No spraying of MONEY please</li>
+            <li>Please RSVP for yourself and any guests you are bringing. If your invitation includes a plus one, please include their name as Guest Name 2.</li>
+            
+          </ul>
+
+          <div 
+                onClick={() => setShowQA(!showQA)}
+
+           className="mb-6 rounded-xl p-6 border border-emerald-200 bg-gradient-to-br from-yellow-100 via-emerald-100 to-yellow-50 shadow-lg">
+            <h3 className="text-2xl font-extrabold text-emerald-900 text-center mb-1 bg-gradient-to-r from-emerald-700 via-yellow-600 to-emerald-400 bg-clip-text text-transparent">
+              Q & A
+            </h3>
+
+            <div className="flex items-center ">
               <div>
-                <h3 className="text-2xl font-extrabold text-emerald-900 mb-1 bg-gradient-to-r from-emerald-700 via-yellow-600 to-emerald-400 bg-clip-text text-transparent">
-                  Q & A
-                </h3>
-                <p className="text-sm text-emerald-700">
-                  For all our friends and family who have lots of questions, please check out our Q & A
-                </p>
+                  <p className="text-sm text-emerald-700 w-[100%]">
+                    For all our friends and family who have lots of questions,
+                    please check out our Q & A
+                  </p>
               </div>
-              <svg
-                className={`w-6 h-6 text-emerald-600 transition-transform ${showQA ? "rotate-180" : ""}`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+
+              <button
+                onClick={() => setShowQA(!showQA)}
+                className="ml-4"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+                <LuCircleChevronDown className="text-2xl" />
+              </button>
+            </div>
 
             {showQA && (
               <div className="mt-4 space-y-4 border-t border-emerald-200 pt-4">
@@ -365,7 +413,9 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                   <p className="font-semibold text-emerald-900 mb-1 bg-gradient-to-r from-emerald-700 via-yellow-600 to-emerald-400 bg-clip-text text-transparent">
                     1. When is the RSVP deadline?
                   </p>
-                  <p className="text-emerald-800">November 14th, 2025 (so we can have accurate headcount).</p>
+                  <p className="text-emerald-800">
+                    November 14th, 2025 (so we can have accurate headcount).
+                  </p>
                 </div>
 
                 <div>
@@ -373,7 +423,8 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                     2. What should I wear?
                   </p>
                   <p className="text-emerald-800">
-                    This is strictly a black tie event. (Refer back to the video that was sent to you)
+                    This is strictly a black tie event. (Refer back to the video
+                    that was sent to you)
                   </p>
                 </div>
 
@@ -381,7 +432,9 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                   <p className="font-semibold text-emerald-900 mb-1 bg-gradient-to-r from-emerald-700 via-yellow-600 to-emerald-400 bg-clip-text text-transparent">
                     3. Kids/infants
                   </p>
-                  <p className="text-emerald-800">Kids/infants are not allowed please.</p>
+                  <p className="text-emerald-800">
+                    Kids/infants are not allowed please.
+                  </p>
                 </div>
 
                 <div>
@@ -389,7 +442,8 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                     4. Can I give cash as a gift?
                   </p>
                   <p className="text-emerald-800">
-                    Your presence is the greatest gift, but if you wish to give, cash gifts are welcome / preferred:
+                    Your presence is the greatest gift, but if you wish to give,
+                    cash gifts are welcome / preferred:
                   </p>
                   <p className="text-emerald-800">
                     CashApp:{" "}
@@ -417,7 +471,8 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                     Can I bring a plus one?
                   </p>
                   <p className="text-emerald-800">
-                    Please only bring a plus one if your invitation specifically mentions it.
+                    Please only bring a plus one if your invitation specifically
+                    mentions it.
                   </p>
                 </div>
               </div>
