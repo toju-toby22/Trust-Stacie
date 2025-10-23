@@ -129,7 +129,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
         <div className="relative flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-600 mb-4"></div>
-            <p className="text-black font-extrabold text-4xl monsieur-la-doulaise-regular-diff">
+            <p className="text-white font-extrabold text-4xl monsieur-la-doulaise-regular-diff">
               Loading your invitation...
             </p>
           </div>
