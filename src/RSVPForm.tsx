@@ -160,6 +160,13 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
             <h1 className="text-[40px] text-center font-bold text-gray-800 mb-2 monsieur-la-doulaise-regular">
               {CONFIG.EVENT_NAME}
             </h1>
+
+
+            
+            <p>With</p>
+
+            <p className="lavishly-yours-regular text-[30px]">Stacie & Trust  </p>
+            
             <div className="h-1 w-20 bg-green-500 mx-auto rounded-full mb-4"></div>
             <div className="text-gray-600 space-y-3">
               <p className="text-lg font-semibold">{CONFIG.EVENT_DATE}</p>
