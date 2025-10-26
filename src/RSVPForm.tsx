@@ -164,9 +164,9 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
             <div className="text-gray-600 space-y-1">
               <p className="text-lg font-semibold">{CONFIG.EVENT_DATE}</p>
               <p>{CONFIG.EVENT_TIME}</p>
-             <span className="flex gap-2 items-center">
+             <span className="flex justify-between gap-2 items-center">
               <p className="font-bold">Venue:</p>
-              <p>{CONFIG.EVENT_LOCATION}</p>
+              <p className="text-[10px] text-left text-wrap-none">{CONFIG.EVENT_LOCATION}</p>
              </span>
             </div>
           </div>
@@ -285,7 +285,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                 
                   
                   <li className="flex items-start">
-                  <span className="mr-2">4.</span>
+                  <span className="mr-2">3.</span>
                   <span>Please RSVP for yourself and any guests you are bringing. If your invitation includes a plus one, please include their name as Guest Name 2.</span>
                 </li>
                 
