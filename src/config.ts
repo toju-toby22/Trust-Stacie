@@ -6,5 +6,5 @@ export const CONFIG: Config = {
   EVENT_NAME: 'Wedding Dinner',
   EVENT_DATE: 'December 14, 2025',
   EVENT_TIME: '4:00 PM',
-  EVENT_LOCATION: '972 Alpharetta St.Roswell,GA.30075(Roswell historic hall)'
+  EVENT_LOCATION: '972 Alpharetta St.Roswell,GA.30075 (Roswell historic hall)'
 };

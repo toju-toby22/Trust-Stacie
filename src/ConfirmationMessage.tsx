@@ -143,8 +143,8 @@ export function ConfirmationMessage({ data, onReturn }: ConfirmationMessageProps
       {/* QR Code Section */}
       <div className="border-t border-gray-200 pt-6 ">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 flex flex-col space-y-8 items-center">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center justify-center">
-            <span className="mr-2">📱</span>
+          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center justify-center text-center">
+            
             Your Event Check-In QR Code
           </h3>
           
@@ -153,7 +153,7 @@ export function ConfirmationMessage({ data, onReturn }: ConfirmationMessageProps
               <img 
                 src={qrCodeUrl} 
                 alt="QR Code" 
-                className="mx-auto mb-4 w-[300px] h-[300px]"
+                className="mx-auto mb-4 w-fit h-[200px]"
               />
             ) : (
               <div className="w-[300px] h-[300px] flex items-center justify-center bg-gray-100 mx-auto mb-4">

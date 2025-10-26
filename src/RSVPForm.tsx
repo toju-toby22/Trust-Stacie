@@ -161,23 +161,23 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
               {CONFIG.EVENT_NAME}
             </h1>
             <div className="h-1 w-20 bg-green-500 mx-auto rounded-full mb-4"></div>
-            <div className="text-gray-600 space-y-1">
+            <div className="text-gray-600 space-y-3">
               <p className="text-lg font-semibold">{CONFIG.EVENT_DATE}</p>
               <p>{CONFIG.EVENT_TIME}</p>
-             <span className="flex justify-between gap-2 items-center">
-              <p className="font-bold">Venue:</p>
-              <p className="text-[10px] text-left text-wrap-none">{CONFIG.EVENT_LOCATION}</p>
-             </span>
+             <div className="flex-col ">
+              <p className="font-bold mt-5">Venue:</p>
+              <p className="text-center text-[16px] w-[300px]">{CONFIG.EVENT_LOCATION}</p>
+             </div>
             </div>
           </div>
         </div>
 
        
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div>
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="guestName1">
-              Guest Name 1* (First and Last Name)
+            <label className="block text-gray-700 text-sm font-semibold mt-4 mb-1" htmlFor="guestName1">
+              Guest Name 1 (First and Last Name)
             </label>
             <input
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -192,7 +192,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
           </div>
 
           <div>
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="guestName2">
+            <label className="block text-gray-700 text-sm font-semibold mb-1" htmlFor="guestName2">
               Guest Name 2 (First and Last Name)
             </label>
             <input
@@ -206,7 +206,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
             />
           </div>
 
-          <div>
+          {/* <div>
             <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="guestName3">
               Guest Name 3 (First and Last Name)
             </label>
@@ -234,10 +234,10 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
               onChange={handleChange}
               placeholder="e.g., Mary Williams (Optional)"
             />
-          </div>
+          </div> */}
 
-          <div>
-            <label className="block text-gray-700 text-sm font-semibold mb-3">
+          <div className="pb-5 pt-1">
+            <label className="block text-gray-700 text-sm font-semibold mb-3 mt-10">
               Will you attend? *
             </label>
             <div className="flex gap-6">
@@ -283,11 +283,6 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                 </li>
 
                 
-                  
-                  <li className="flex items-start">
-                  <span className="mr-2">3.</span>
-                  <span>Please RSVP for yourself and any guests you are bringing. If your invitation includes a plus one, please include their name as Guest Name 2.</span>
-                </li>
                 
               </ul>
             </div>
