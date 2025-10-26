@@ -183,7 +183,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
 
         <div className="space-y-1">
           <div>
-            <label className="block text-gray-700 text-sm font-semibold mt-4 mb-1" htmlFor="guestName1">
+            <label className="block text-gray-700 text-sm font-semibold mt-4 mb-2" htmlFor="guestName1">
               Guest Name 1 (First and Last Name)
             </label>
             <input
@@ -199,7 +199,7 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
           </div>
 
           <div>
-            <label className="block text-gray-700 text-sm font-semibold mb-1" htmlFor="guestName2">
+            <label className="block text-gray-700 text-sm font-semibold mt-4 mb-1" htmlFor="guestName2">
               Guest Name 2 (First and Last Name)
             </label>
             <input
