@@ -294,6 +294,9 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
               </ul>
             </div>
 
+<p className="py-3 text-[15px]">
+  Kindly Click the box below for more information
+</p>
 
           <div className="mb-6 rounded-xl p-6 border border-emerald-200 bg-gradient-to-br from-yellow-100 via-emerald-100 to-yellow-50 shadow-lg">
                 <h3 className="text-xl text-center font-bold text-emerald-800 mb-1">
@@ -306,9 +309,11 @@ export function RSVPForm({ onSubmissionSuccess }: RSVPFormProps) {
                   For all our friends and family who have lots of questions,
                   please check out our Q & A
                 </p>
-                  < button onClick={() => setShowQA(!showQA)} className="text-emerald-700 hover:text-emerald-900 focus:outline-none">
-                    <FaCircleChevronDown/>
+                 <div className="border-4 border-emerald-900 rounded-full px-3 py-3 h-11 w-11 flex justify-center items-center">
+                   < button onClick={() => setShowQA(!showQA)} className="text-emerald-700 hover:text-emerald-900 focus:outline-none">
+                    <FaCircleChevronDown className="h-5 w-5"/>
                   </ button>
+                 </div>
                 </div>
 
             {showQA && (
